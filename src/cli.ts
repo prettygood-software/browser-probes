@@ -1,46 +1,25 @@
 #!/usr/bin/env bun
-import { defineCommand, runCommand } from "citty";
+import { defineCommand, runCommand as runCittyCommand } from "citty";
 
-import { greetCommand } from "./commands/greet.ts";
-import { helloCommand } from "./commands/hello.ts";
-import { versionCommand } from "./commands/version.ts";
+import { listCommand } from "./commands/list.ts";
+import { runCommand } from "./commands/run.ts";
 import { CliError } from "./errors/index.ts";
-import { createLogger, type LogFormat, type LogLevel } from "./logger/index.ts";
 import { NAME, VERSION } from "./version.ts";
 
 const main = defineCommand({
   meta: {
     name: NAME,
     version: VERSION,
-    description: "Hello-world CLI scaffolded from ts-cli-template",
-  },
-  args: {
-    debug: {
-      type: "boolean",
-      description: "Enable debug logging",
-      default: false,
-    },
-    "log-format": {
-      type: "string",
-      description: "Log format: pretty or json",
-      default: "pretty",
-    },
-  },
-  setup({ args }) {
-    const level: LogLevel = args.debug ? "debug" : "info";
-    const format: LogFormat = args["log-format"] === "json" ? "json" : "pretty";
-    const logger = createLogger({ level, format });
-    logger.debug({ args }, "CLI started");
+    description: "Composable browser-diagnostic probes (CreepJS, GeoIP coherence).",
   },
   subCommands: {
-    hello: helloCommand,
-    greet: greetCommand,
-    version: versionCommand,
+    list: listCommand,
+    run: runCommand,
   },
 });
 
 try {
-  await runCommand(main, { rawArgs: process.argv.slice(2) });
+  await runCittyCommand(main, { rawArgs: process.argv.slice(2) });
 } catch (error) {
   if (error instanceof CliError) {
     process.stderr.write(`error: ${error.message}\n`);

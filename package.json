@@ -1,17 +1,25 @@
 {
-  "name": "@prettygood-software/ts-cli-template",
-  "version": "0.0.0",
-  "description": "TypeScript CLI template with citty, pino, i18n, and modern tooling",
+  "name": "@prettygood-software/browser-probes",
+  "version": "0.1.0",
+  "description": "Composable browser-diagnostic probes (CreepJS, GeoIP coherence) on top of @prettygood-software/site-runner. CLI + programmatic.",
   "type": "module",
-  "private": true,
   "bin": {
-    "hello-cli": "./dist/cli.js"
+    "browser-probe": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
   },
   "prettier": "@prettygood-software/ts-config/prettier.json",
   "scripts": {
     "dev": "bun run src/cli.ts",
-    "build": "bun build ./src/cli.ts --outdir ./dist --target bun --format esm --banner '#!/usr/bin/env bun'",
-    "build:binary": "bun build ./src/cli.ts --compile --outfile ./dist/hello-cli",
+    "build": "bun build ./src/cli.ts --outdir ./dist --target bun --format esm --packages external --banner '#!/usr/bin/env bun'",
+    "build:binary": "bun build ./src/cli.ts --compile --outfile ./dist/browser-probe",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "lint": "eslint .",
@@ -23,7 +31,10 @@
     "check": "bun run typecheck && bun run lint && bun run format:check && bun run spell && bun run test"
   },
   "dependencies": {
+    "@prettygood-software/site-runner": "^1.4.0",
     "citty": "^0.1.6",
+    "dotenv": "^16.0.0",
+    "playwright-core": "1.59.1",
     "pino": "^9",
     "pino-pretty": "^11"
   },

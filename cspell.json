@@ -11,5 +11,30 @@
     ".git",
     ".claude"
   ],
-  "words": ["citty", "noemit", "pino"]
+  "words": [
+    "BACKCONNECT",
+    "Camoufox",
+    "camoufox",
+    "citty",
+    "cloakbrowser",
+    "domcontentloaded",
+    "geolocation",
+    "mktemps",
+    "CREEPJS",
+    "creepjs",
+    "Decodo",
+    "distros",
+    "dotenv",
+    "geoip",
+    "impit",
+    "ipapi",
+    "mktemp",
+    "noemit",
+    "ntls",
+    "pino",
+    "playwright",
+    "prettygood",
+    "tmpdir",
+    "tzinfo"
+  ]
 }

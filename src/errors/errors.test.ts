@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { CliError, ErrorCode, unsupportedLanguage } from "./index.ts";
+import { CliError, ErrorCode, unknownProbe } from "./index.ts";
 
 describe("CliError", () => {
   test("captures code and default exitCode", () => {
@@ -23,11 +23,11 @@ describe("CliError", () => {
   });
 });
 
-describe("unsupportedLanguage", () => {
+describe("unknownProbe", () => {
   test("produces a helpful message and exitCode 2", () => {
-    const err = unsupportedLanguage("xx", ["en", "es"]);
-    expect(err.code).toBe(ErrorCode.UnsupportedLanguage);
+    const err = unknownProbe("foo", ["creepjs", "geoip"]);
+    expect(err.code).toBe(ErrorCode.UnknownProbe);
     expect(err.exitCode).toBe(2);
-    expect(err.message).toBe('Unsupported language: "xx". Supported: en, es.');
+    expect(err.message).toBe('Unknown probe: "foo". Known: creepjs, geoip.');
   });
 });

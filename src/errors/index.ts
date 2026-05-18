@@ -1,5 +1,5 @@
 export const ErrorCode = {
-  UnsupportedLanguage: "UNSUPPORTED_LANGUAGE",
+  UnknownProbe: "UNKNOWN_PROBE",
   InvalidInput: "INVALID_INPUT",
   Internal: "INTERNAL",
 } as const;
@@ -22,9 +22,7 @@ export class CliError extends Error {
   }
 }
 
-export const unsupportedLanguage = (lang: string, supported: readonly string[]): CliError =>
-  new CliError(
-    ErrorCode.UnsupportedLanguage,
-    `Unsupported language: "${lang}". Supported: ${supported.join(", ")}.`,
-    { exitCode: 2 },
-  );
+export const unknownProbe = (name: string, known: readonly string[]): CliError =>
+  new CliError(ErrorCode.UnknownProbe, `Unknown probe: "${name}". Known: ${known.join(", ")}.`, {
+    exitCode: 2,
+  });

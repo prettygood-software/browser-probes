@@ -12,3 +12,6 @@ coverage
 !.vscode/settings.json
 .claude/
 .bun-version
+
+# Auto-cloned by the CreepJS probe on first run (consumer CWD); bulky.
+vendor/
