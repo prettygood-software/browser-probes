@@ -1,6 +1,7 @@
 export const ErrorCode = {
-  UnsupportedLanguage: "UNSUPPORTED_LANGUAGE",
+  UnknownProbe: "UNKNOWN_PROBE",
   InvalidInput: "INVALID_INPUT",
+  ProbeFailed: "PROBE_FAILED",
   Internal: "INTERNAL",
 } as const;
 
@@ -22,9 +23,23 @@ export class CliError extends Error {
   }
 }
 
-export const unsupportedLanguage = (lang: string, supported: readonly string[]): CliError =>
-  new CliError(
-    ErrorCode.UnsupportedLanguage,
-    `Unsupported language: "${lang}". Supported: ${supported.join(", ")}.`,
-    { exitCode: 2 },
-  );
+/**
+ * Typed failure raised by the runner (timeouts) and CLI input checks
+ * (missing proxy env). `kind` is a stable machine-readable category;
+ * the printed message is always `${kind}: ${detail}` so consumers can
+ * grep stderr without parsing free-text.
+ */
+export class ProbeError extends CliError {
+  readonly kind: string;
+
+  constructor(kind: string, detail: string, options: { cause?: unknown; exitCode?: number } = {}) {
+    super(ErrorCode.ProbeFailed, `${kind}: ${detail}`, options);
+    this.name = "ProbeError";
+    this.kind = kind;
+  }
+}
+
+export const unknownProbe = (name: string, known: readonly string[]): CliError =>
+  new CliError(ErrorCode.UnknownProbe, `Unknown probe: "${name}". Known: ${known.join(", ")}.`, {
+    exitCode: 2,
+  });

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Local launcher — wraps `bun` so consumers can run the CLI without building.
+# After `bun run build`, dist/cli.js is the published artifact (see package.json
+# "bin"). This script just delegates to the source for dev convenience.
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+exec bun "$HERE/../src/cli.ts" "$@"

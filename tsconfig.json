@@ -2,6 +2,7 @@
   "extends": "@prettygood-software/ts-config/tsconfig.base.json",
   "compilerOptions": {
     "types": ["bun"],
+    "lib": ["ESNext", "DOM"],
     "resolveJsonModule": true
   },
   "include": ["src/**/*", "test/**/*", "*.ts", "*.config.ts", "*.config.js", "eslint.config.js"],
