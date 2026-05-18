@@ -9,6 +9,7 @@ import {
 } from "@prettygood-software/site-runner/browser";
 import { countryProfile } from "@prettygood-software/site-runner/browser/fingerprint";
 
+import { ProbeError } from "./errors/index.ts";
 import type { Probe, ProbeContext, ProbeReport, RunProbeOptions } from "./types.ts";
 
 const DEFAULT_BYPASS = "127.0.0.1,localhost";
@@ -46,7 +47,7 @@ export async function runProbe<TResult extends object>(
   };
 
   try {
-    const result = await probe.run(ctx);
+    const result = await withTimeout(probe.run(ctx), opts.timeoutMs, probe.name);
     return {
       probe: probe.name,
       engine,
@@ -67,6 +68,32 @@ export async function runProbe<TResult extends object>(
       await rm(profileDir, { recursive: true, force: true }).catch(() => null);
     }
     await rm(scratchDir, { recursive: true, force: true }).catch(() => null);
+  }
+}
+
+async function withTimeout<T>(
+  work: Promise<T>,
+  timeoutMs: number | undefined,
+  probeName: string,
+): Promise<T> {
+  if (!timeoutMs || timeoutMs <= 0) return work;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race<T>([
+      work,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(() => {
+          reject(
+            new ProbeError(
+              "timeout",
+              `probe "${probeName}" exceeded ${String(timeoutMs)}ms timeout`,
+            ),
+          );
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }
 

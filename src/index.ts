@@ -1,3 +1,4 @@
+export { CliError, ErrorCode, ProbeError } from "./errors/index.ts";
 export { formatJson, formatPretty } from "./output.ts";
 export { creepjsProbe } from "./probes/creepjs/index.ts";
 export type { CreepJsResult } from "./probes/creepjs/types.ts";

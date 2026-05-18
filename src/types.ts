@@ -43,6 +43,13 @@ export interface RunProbeOptions {
   logger?: Logger;
   /** Override the default profile-dir mktemp. */
   profileDir?: string;
+  /**
+   * Abort the probe (NOT the browser launch) if `probe.run` doesn't return
+   * within this many milliseconds. Throws `ProbeError("timeout", ...)`;
+   * the runner still tears down the browser and tempdirs in the finally
+   * block, so a timeout never leaks a Playwright subprocess.
+   */
+  timeoutMs?: number;
 }
 
 export {
