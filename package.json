@@ -35,7 +35,7 @@
     "citty": "^0.1.6",
     "dotenv": "^16.0.0",
     "playwright-core": "1.59.1",
-    "pino": "^9",
+    "pino": "^10",
     "pino-pretty": "^11"
   },
   "devDependencies": {
