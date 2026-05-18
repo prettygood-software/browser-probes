@@ -1,0 +1,53 @@
+pre-commit:
+  commands:
+    typecheck:
+      glob: "**/*.{ts,tsx}"
+      run: bun run typecheck
+      fail_text: "tsc found type errors"
+
+    lint:
+      glob: "**/*.{ts,tsx}"
+      run: bun x eslint {staged_files}
+      fail_text: "ESLint found issues"
+
+    format:
+      glob: "**/*.{ts,tsx,js,jsx,json,md,yaml,yml}"
+      run: bun x prettier --check {staged_files}
+      fail_text: "Prettier check failed (run `bun run format`)"
+
+    spell:
+      glob: "**/*.{ts,tsx,md,json}"
+      run: bun x cspell --no-progress --no-must-find-files {staged_files}
+      fail_text: "cspell found unknown words"
+
+    file-size:
+      glob: "**/*.{ts,tsx}"
+      shell: bash
+      run: |
+        MAX_LINES=300
+        for f in {staged_files}; do
+          if [[ ! "$f" =~ \.test\.tsx?$ ]] && [[ ! "$f" =~ \.spec\.tsx?$ ]]; then
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt "$MAX_LINES" ]; then
+              echo "$f: $lines lines (limit: $MAX_LINES)"
+              exit 1
+            fi
+          fi
+        done
+      fail_text: "source files must be ≤300 lines (tests excluded)"
+
+    test:
+      glob: "**/*.{ts,tsx}"
+      run: bun test --bail
+      fail_text: "tests failed"
+
+pre-push:
+  commands:
+    full-check:
+      run: bun run check
+      fail_text: "full check failed"
+
+    actionlint:
+      glob: ".github/workflows/*.{yml,yaml}"
+      run: actionlint
+      fail_text: "actionlint found issues in workflows"

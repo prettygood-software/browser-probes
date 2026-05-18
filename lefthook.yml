@@ -1,0 +1,4 @@
+extends:
+  - lefthook/files.yml
+  - lefthook/ts.yml
+  - lefthook/commit-msg.yml

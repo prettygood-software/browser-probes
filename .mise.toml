@@ -1,0 +1,6 @@
+# Base tool versions — shared across all environments
+[tools]
+bun = "1.3.13"
+actionlint = "latest"
+cocogitto = "6"
+changie = "latest"
