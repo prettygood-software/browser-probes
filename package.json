@@ -1,6 +1,6 @@
 {
   "name": "@prettygood-software/browser-probes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Composable browser-diagnostic probes (CreepJS, GeoIP coherence) on top of @prettygood-software/site-runner. CLI + programmatic.",
   "type": "module",
   "bin": {
@@ -18,7 +18,7 @@
   "prettier": "@prettygood-software/ts-config/prettier.json",
   "scripts": {
     "dev": "bun run src/cli.ts",
-    "build": "bun build ./src/cli.ts --outdir ./dist --target bun --format esm --packages external --banner '#!/usr/bin/env bun'",
+    "build": "bun build ./src/cli.ts --outdir ./dist --target bun --format esm --packages external",
     "build:binary": "bun build ./src/cli.ts --compile --outfile ./dist/browser-probe",
     "test": "bun test",
     "test:watch": "bun test --watch",
