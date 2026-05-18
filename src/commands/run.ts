@@ -9,7 +9,7 @@ import {
 } from "@prettygood-software/site-runner/browser";
 import { defineCommand } from "citty";
 
-import { unknownProbe } from "../errors/index.ts";
+import { ProbeError, unknownProbe } from "../errors/index.ts";
 import { createLogger } from "../logger/index.ts";
 import { formatJson, formatPretty } from "../output.ts";
 import { getProbe, probes } from "../probes/index.ts";
@@ -41,10 +41,16 @@ export const runCommand = defineCommand({
       description: `Browser engine (${KNOWN_ENGINES.join(", ")})`,
       default: "camoufox",
     },
-    "no-proxy": {
+    // Define this as the positive `proxy` flag (default true) and let
+    // citty's --no-X negation produce `--no-proxy`. Declaring `no-proxy`
+    // as its own arg makes citty silently treat the literal `--no-proxy`
+    // input as the negation of an undeclared `proxy` flag, which left
+    // args["no-proxy"] stuck at its default of false. v0.1.0 shipped
+    // with that bug masked by resolveProxy returning null on missing env.
+    proxy: {
       type: "boolean",
-      description: "Skip the env-configured proxy (engine-only baseline)",
-      default: false,
+      description: "Use the env-configured proxy. Pass --no-proxy for an engine-only baseline.",
+      default: true,
     },
     country: {
       type: "string",
@@ -59,6 +65,10 @@ export const runCommand = defineCommand({
       type: "string",
       description: "Also persist JSON report to this path",
     },
+    timeout: {
+      type: "string",
+      description: 'Abort the probe after N seconds (post-launch). Throws ProbeError("timeout").',
+    },
   },
   async run({ args }) {
     const probe = getProbe(args.probe);
@@ -69,10 +79,12 @@ export const runCommand = defineCommand({
       );
     }
     const engine = parseEngine(args.engine);
-    const proxy = resolveProxy({ noProxy: args["no-proxy"], country: args.country });
+    const proxy = resolveProxy({ noProxy: !args.proxy, country: args.country });
+    const timeoutMs = parseTimeout(args.timeout);
     const logger = createLogger({ level: "info", format: "pretty" });
 
     const opts: RunProbeOptions = { engine, proxy, logger };
+    if (timeoutMs !== undefined) opts.timeoutMs = timeoutMs;
     const report = await runProbe(probe, opts);
 
     const json = JSON.stringify(report, null, 2);
@@ -96,6 +108,27 @@ interface ProxyArgs {
 function resolveProxy({ noProxy, country }: ProxyArgs): ProxyConfig | null {
   if (noProxy) return null;
   const base = proxyConfigFromEnv();
-  if (!base) return null;
+  if (!base) {
+    // Proxy is the default; missing env is a usage error, not a silent
+    // fallback. The old behavior returned null here, which made
+    // `browser-probe run creepjs` silently behave as `--no-proxy` and
+    // misled diagnostics. Be explicit instead.
+    throw new ProbeError(
+      "proxy_required",
+      "PROXY_USERNAME/PROXY_PASSWORD/PROXY_BACKCONNECT_HOST/PROXY_BACKCONNECT_PORT not in env. Pass --no-proxy for an engine-only baseline.",
+    );
+  }
   return country === undefined ? base : { ...base, country };
+}
+
+function parseTimeout(raw: string | undefined): number | undefined {
+  if (raw === undefined) return undefined;
+  const seconds = Number(raw);
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    throw new ProbeError(
+      "invalid_timeout",
+      `--timeout must be a positive number of seconds, got "${raw}"`,
+    );
+  }
+  return Math.round(seconds * 1000);
 }
