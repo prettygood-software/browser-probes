@@ -46,7 +46,7 @@
     "typescript-eslint": "^8",
     "eslint": "^9",
     "prettier": "^3",
-    "cspell": "^8"
+    "cspell": "^10"
   },
   "engines": {
     "bun": ">=1.1"
