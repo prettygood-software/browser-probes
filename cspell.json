@@ -4,6 +4,7 @@
   "ignorePaths": [
     "node_modules",
     "dist",
+    "vendor",
     "coverage",
     "bun.lockb",
     "bun.lock",
